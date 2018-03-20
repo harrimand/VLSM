@@ -12,6 +12,8 @@ def setup():
     global wheel
     background(0)
     # rectMode(CENTER)
+    netArray(9)
+    drawgrid()
     
 def draw():
     global wheel, newWheel, mX, mY, wheelX, wheelY
@@ -21,7 +23,7 @@ def draw():
         background(0)
         drawgrid()
         stroke(32, 32, 96)
-        fill(32, 32, 96)
+        fill(32, 96, 96, 160)
         rect(mX, mY, abs(wheelX), abs(wheelY))
         newWheel = False
     popMatrix()
@@ -54,6 +56,11 @@ def mouseWheel(event):
     wheelP = wheel
     print("Wheel", wheel, "mX: ", mX, "mY: ", mY)
     newWheel = True
+
+def netArray(hostBits):
+    if hostBits % 2 == 0:
+        print("Square")
+    else: print("Rectangular")
 
 
 
