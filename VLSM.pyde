@@ -1,4 +1,8 @@
+
+from __future__ import print_function
+
 wheel = 0
+sn = 0
 snW = 32
 snH = 32
 snX = 0
@@ -9,8 +13,20 @@ netMaskBits = 8
 mX = 0
 mY = 0
 net = []
+subNet = []
+
+class Network(object):
+    def __init__(self, snAdd, snMsk):
+        self.sn = snAdd
+        self.snM = snMsk
+    def show(self):
+        shStr = str(self.sn) + "/" + str(self.snM) + "  "
+        print(shStr, end='')
+    # def add(self, snA, snM):
+        
+
 def settings():
-    global net, netMaskBits
+    global net
     if netMaskBits % 2 == 0:
         w = int(sqrt(2**netMaskBits))
         h = w
@@ -53,7 +69,7 @@ def draw():
     popMatrix()
     
 def mouseWheel(event):
-    global wheel, updateSN, snW, snH, wheelP, snX, snY
+    global wheel, updateSN, snW, snH, wheelP, sn, snX, snY
     mX = round(mouseX - mouseX % 32 )
     mY = round(mouseY - mouseY % 32 )
     wheel += event.getCount()
@@ -90,12 +106,12 @@ def mouseWheel(event):
 def mouseMoved(event):
     if keyCode == SHIFT:
         return
-    global snW, snH, snX, snY, updateSN
+    global sn, snW, snH, snX, snY, updateSN
     mX = round(mouseX - mouseX % 32 )
     mY = round(mouseY - mouseY % 32 )
     # print("mX: ", mX, "mY: ", mY)
     ip = int(bin(int(mX/32))[2:],4) + 2 * int(bin(int(mY/32))[2:],4)
-    # sn = (2**netMaskBits - 2**wheel) &  ip
+    sn = (2**netMaskBits - 2**wheel) &  ip
     snCol = int( floor((mX/32) / abs(snW / 32)) * abs(snW / 32))
     snX = snCol * 32
     snRow = int( floor((mY/32) / abs(snH / 32)) * abs(snH / 32))
@@ -120,3 +136,11 @@ def ipDraw(net):
         for j, col in enumerate(row):
             fill(128)
             text(net[i][j], j * 32 + 16, i * 32 + 16)
+
+def keyPressed():
+    if key == 's':
+        for snA in subNet:
+            snA.show()
+
+def mousePressed():
+    subNet.append(Network(sn, 32 - wheel))
