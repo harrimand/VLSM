@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 
 wheel = 0
@@ -9,11 +8,13 @@ snX = 0
 snY = 0
 wheelP = 0
 updateSN = False
+clicked = False
 netMaskBits = 8
 mX = 0
 mY = 0
 net = []
 subNet = []
+
 
 class Network(object):
     def __init__(self, snAdd, snMsk):
@@ -23,28 +24,31 @@ class Network(object):
         shStr = str(self.sn) + "/" + str(self.snM) + "  "
         print(shStr, end='')
     # def add(self, snA, snM):
-        
+
+class netSelect(object):
+    def __init__(self):
+        self.netBox = createShape(GROUP)
+    def addBox(self, snX, snY, snW, snH ):
+        Box = createShape(RECT, snX, snY, snW, snH)
+        Box.stroke(255,0,0)
+        self.netBox.addChild(Box)
+    def getBox(self):
+        return self.netBox
+    
+# snBoxes = netSelect()
 
 def settings():
     global net
-    if netMaskBits % 2 == 0:
-        w = int(sqrt(2**netMaskBits))
-        h = w
-        size(w * 32, h * 32)
-        print("Width: ", w, "Height: ", h)
-    else:
-        w = int(sqrt(2**netMaskBits/2)*2)
-        h = int(sqrt(2**netMaskBits/2))
-        size(w * 32, h * 32)
-        print("Width: ", w, "Height: ", h)
+    h = int(2 ** ((netMaskBits - netMaskBits % 2)/2))
+    w = 2 * h if netMaskBits % 2 else h
+    size(w * 32, h * 32)
+    print("Width: ", w, "Height: ", h)
     net = netArray(w, h)
-    # idPrint 
     print(net)
 
 
 def setup():
     global wheel, net
-    
     background(0)
     # rectMode(CENTER)
     # netArray(9)
@@ -52,13 +56,14 @@ def setup():
     textAlign(CENTER, CENTER)
     textSize(12)
     text("123", 112, 112)
-    ipDraw(net)    
+    ipDraw(net)
+
     
 def draw():
     global updateSN
-    pushMatrix()
-    # translate(width/2, height/2)
+    snBoxes = netSelect()
     if (updateSN):
+        pushMatrix()
         background(0)
         drawgrid()
         ipDraw(net)
@@ -66,7 +71,10 @@ def draw():
         fill(32, 96, 96, 160)
         rect(snX, snY, abs(snW), abs(snH))
         updateSN = False
-    popMatrix()
+        popMatrix()
+        shape(snBoxes.getBox())
+    if (clicked):
+        snBoxes.addBox(snX, snY, snW, snH)
     
 def mouseWheel(event):
     global wheel, updateSN, snW, snH, wheelP, sn, snX, snY
@@ -143,4 +151,8 @@ def keyPressed():
             snA.show()
 
 def mousePressed():
+    global clicked
+    clicked = True
     subNet.append(Network(sn, 32 - wheel))
+    
+#    snBoxes.addBox(snX, snY, snW, snH)
